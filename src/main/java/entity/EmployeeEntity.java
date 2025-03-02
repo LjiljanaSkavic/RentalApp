@@ -1,9 +1,7 @@
 package entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.Objects;
+import lombok.Data;
 
 @Data
 @Entity
@@ -16,7 +14,7 @@ public class EmployeeEntity {
 
     @Basic
     @Column(name = "role")
-    private Object role;
+    private String role;
 
     @Basic
     @Column(name = "user_id")

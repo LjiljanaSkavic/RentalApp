@@ -43,5 +43,4 @@ public class UserEntity {
     @Id
     @Column(name = "profile_picture_id")
     private int profilePictureId;
-
 }
