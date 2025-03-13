@@ -24,7 +24,7 @@ public class UserController {
             String username = loginRequest.getUsername();
             String password = loginRequest.getPassword();
 
-            Employee employee = userService.login(username, password);
+            Employee employee = userService.loginEmployee(username, password);
             if (employee != null) {
                 return ResponseEntity.ok(employee);
             } else {

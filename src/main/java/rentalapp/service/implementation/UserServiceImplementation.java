@@ -25,16 +25,20 @@ public class UserServiceImplementation implements UserService {
 
 
     @Override
-    public Employee login(String username, String password) {
-        UserEntity user = userRepository.findByUsernameAndPassword(username, password);
-        if (user != null) {
-            EmployeeEntity employeeEntity = employeeRepository.findByUserId(user.getId());
-            String role = employeeEntity.getRole();
-            return getEmployeeDTO(user, role);
-        } else {
-            return null;
+    public Employee loginEmployee(String username, String password) {
+        try {
+            UserEntity user = userRepository.findByUsernameAndPassword(username, password);
+            if (user != null) {
+                EmployeeEntity employeeEntity = employeeRepository.findByUserId(user.getId());
+                String role = employeeEntity.getRole();
+                return getEmployeeDTO(user, role);
+            }
+        } catch (Exception e) {
+            System.err.println("Error during employee login: " + e.getMessage());
         }
+        return null;
     }
+
 
     private Employee getEmployeeDTO(UserEntity user, String role) {
         Employee employee = modelMapper.map(user, Employee.class);
