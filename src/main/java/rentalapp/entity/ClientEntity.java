@@ -19,9 +19,4 @@ public class ClientEntity {
     @Basic
     @Column(name = "user_id")
     private int userId;
-
-    @Basic
-    @Column(name = "user_profile_picture_id")
-    private int userProfilePictureId;
-
 }
