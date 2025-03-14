@@ -21,6 +21,10 @@ public class FileEntity {
     private String path;
 
     @Basic
+    @Column(name = "type")
+    private String type;
+
+    @Basic
     @Column(name = "is_deleted")
     private byte isDeleted;
 
