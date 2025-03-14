@@ -26,6 +26,6 @@ public class FileEntity {
 
     @Basic
     @Column(name = "is_deleted")
-    private byte isDeleted;
+    private boolean isDeleted;
 
 }

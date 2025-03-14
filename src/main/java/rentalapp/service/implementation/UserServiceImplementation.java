@@ -4,9 +4,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rentalapp.dto.Employee;
+import rentalapp.dto.RentalFile;
 import rentalapp.entity.EmployeeEntity;
+import rentalapp.entity.FileEntity;
 import rentalapp.entity.UserEntity;
 import rentalapp.repository.EmployeeRepository;
+import rentalapp.repository.FileRepository;
 import rentalapp.repository.UserRepository;
 import rentalapp.service.UserService;
 
@@ -16,6 +19,8 @@ public class UserServiceImplementation implements UserService {
     private final ModelMapper modelMapper;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private FileRepository fileRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
 
@@ -30,8 +35,9 @@ public class UserServiceImplementation implements UserService {
             UserEntity user = userRepository.findByUsernameAndPassword(username, password);
             if (user != null) {
                 EmployeeEntity employeeEntity = employeeRepository.findByUserId(user.getId());
+                FileEntity userProfilePictureFile = fileRepository.findById(user.getProfilePictureId()).orElse(null);
                 String role = employeeEntity.getRole();
-                return getEmployeeDTO(user, role);
+                return getEmployeeDTO(user, userProfilePictureFile, role);
             }
         } catch (Exception e) {
             System.err.println("Error during employee login: " + e.getMessage());
@@ -40,9 +46,15 @@ public class UserServiceImplementation implements UserService {
     }
 
 
-    private Employee getEmployeeDTO(UserEntity user, String role) {
+    private Employee getEmployeeDTO(UserEntity user, FileEntity fileEntity, String role) {
         Employee employee = modelMapper.map(user, Employee.class);
+        RentalFile rentalFile = convertFileDTO(fileEntity);
+        employee.setImage(rentalFile);
         employee.setRole(role);
         return employee;
+    }
+
+    private RentalFile convertFileDTO(FileEntity fileEntity) {
+        return modelMapper.map(fileEntity, RentalFile.class);
     }
 }
