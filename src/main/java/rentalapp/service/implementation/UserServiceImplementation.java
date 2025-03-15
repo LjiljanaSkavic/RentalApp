@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rentalapp.dto.Employee;
+import rentalapp.dto.PasswordRequest;
 import rentalapp.dto.RentalFile;
 import rentalapp.entity.EmployeeEntity;
 import rentalapp.entity.FileEntity;
@@ -34,21 +35,32 @@ public class UserServiceImplementation implements UserService {
         try {
             UserEntity user = userRepository.findByUsernameAndPassword(username, password);
             if (user != null) {
-                EmployeeEntity employeeEntity = employeeRepository.findByUserId(user.getId());
-                FileEntity userProfilePictureFile = fileRepository.findById(user.getProfilePictureId()).orElse(null);
-                String role = employeeEntity.getRole();
-                return getEmployeeDTO(user, userProfilePictureFile, role);
+                return getEmployeeDTO(user);
             }
         } catch (Exception e) {
+
             System.err.println("Error during employee login: " + e.getMessage());
         }
         return null;
     }
 
+    @Override
+    public Employee changePassword(Integer id, PasswordRequest passwordRequest) {
+        UserEntity user = userRepository.findByIdAndPassword(id, passwordRequest.getCurrentPassword());
+        if (user != null) {
+            user.setPassword(passwordRequest.getNewPassword());
+            userRepository.save(user);
+        }
+        return user != null ? getEmployeeDTO(user) : null;
+    }
 
-    private Employee getEmployeeDTO(UserEntity user, FileEntity fileEntity, String role) {
+
+    private Employee getEmployeeDTO(UserEntity user) {
+        EmployeeEntity employeeEntity = employeeRepository.findByUserId(user.getId());
+        FileEntity userProfilePictureFile = fileRepository.findById(user.getProfilePictureId()).orElse(null);
+        String role = employeeEntity.getRole();
         Employee employee = modelMapper.map(user, Employee.class);
-        RentalFile rentalFile = convertFileDTO(fileEntity);
+        RentalFile rentalFile = convertFileDTO(userProfilePictureFile);
         employee.setImage(rentalFile);
         employee.setRole(role);
         return employee;
